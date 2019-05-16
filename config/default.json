@@ -1,0 +1,3 @@
+{
+  "MONGO_URI": "mongodb+srv://quyencm:quyencm@express-app-7nfid.mongodb.net/message-restapi?retryWrites=true"
+}
