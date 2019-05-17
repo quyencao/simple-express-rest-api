@@ -21,6 +21,19 @@ router
     feedController.createPost
   );
 
-router.route("/posts/:postId").get(feedController.getPost);
+router
+  .route("/posts/:postId")
+  .get(feedController.getPost)
+  .put(
+    [
+      body("title")
+        .trim()
+        .isLength({ min: 5 }),
+      body("content")
+        .trim()
+        .isLength({ min: 5 })
+    ],
+    feedController.editPost
+  );
 
 module.exports = router;
