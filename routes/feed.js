@@ -34,6 +34,7 @@ router
         .isLength({ min: 5 })
     ],
     feedController.editPost
-  );
+  )
+  .delete(feedController.deletePost);
 
 module.exports = router;

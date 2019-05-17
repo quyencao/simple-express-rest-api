@@ -134,3 +134,32 @@ exports.editPost = (req, res, next) => {
       next(err);
     });
 };
+
+exports.deletePost = (req, res, next) => {
+  const postId = req.params.postId;
+  if (!ObjectId.isValid(postId)) {
+    const err = new Error("Post not found");
+    err.statusCode = 404;
+    throw err;
+  }
+  Post.findById(postId)
+    .then(post => {
+      if (!post) {
+        const err = new Error("Post not found");
+        err.statusCode = 404;
+        throw err;
+      }
+      // Check user own this post
+      fs.unlink(post.imageUrl, err => {});
+      return Post.findByIdAndRemove(postId);
+    })
+    .then(post => {
+      res.status(200).json({ post });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
