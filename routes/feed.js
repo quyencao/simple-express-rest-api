@@ -2,13 +2,14 @@ const express = require("express");
 const path = require("path");
 const { body } = require("express-validator/check");
 
+const auth = require("../middleware/auth");
 const feedController = require("../controllers/feed");
 
 const router = express.Router();
 
 router
   .route("/posts")
-  .get(feedController.getPosts)
+  .get(auth, feedController.getPosts)
   .post(
     [
       body("title", "title is invalid")
