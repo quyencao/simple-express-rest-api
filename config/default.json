@@ -1,3 +1,4 @@
 {
-  "MONGO_URI": "mongodb+srv://quyencm:quyencm@express-app-7nfid.mongodb.net/message-restapi?retryWrites=true"
+  "MONGO_URI": "mongodb+srv://quyencm:quyencm@express-app-7nfid.mongodb.net/message-restapi?retryWrites=true",
+  "JWT_SECRET": "dasdfwe90fuwq89ef$jq$23489r!!u28ruq235434@@$"
 }

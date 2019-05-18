@@ -33,6 +33,18 @@ router.put(
   authController.signUp
 );
 
-router.post("/login", authController.login);
+router.post(
+  "/login",
+  [
+    body("email")
+      .isEmail()
+      .withMessage("Please enter valid email"),
+    body("password")
+      .trim()
+      .isLength({ min: 6, max: 25 })
+      .withMessage("Password must have between 6 and 25 chars")
+  ],
+  authController.login
+);
 
 module.exports = router;
