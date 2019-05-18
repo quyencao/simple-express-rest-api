@@ -6,6 +6,7 @@ const config = require("config");
 const multer = require("multer");
 
 const feedRoutes = require("./routes/feed");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 // Route
+app.use("/auth", authRoutes);
 app.use("/feed", feedRoutes);
 
 app.use((err, req, res, next) => {
