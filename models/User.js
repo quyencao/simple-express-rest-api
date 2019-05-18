@@ -26,4 +26,9 @@ const userSchema = new Schema({
   ]
 });
 
+userSchema.methods.deletePost = function(postId) {
+  this.posts.pull(postId);
+  return this.save();
+};
+
 module.exports = mongoose.model("User", userSchema);

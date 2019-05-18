@@ -11,6 +11,7 @@ router
   .route("/posts")
   .get(auth, feedController.getPosts)
   .post(
+    auth,
     [
       body("title", "title is invalid")
         .trim()
@@ -24,8 +25,9 @@ router
 
 router
   .route("/posts/:postId")
-  .get(feedController.getPost)
+  .get(auth, feedController.getPost)
   .put(
+    auth,
     [
       body("title")
         .trim()
@@ -36,6 +38,6 @@ router
     ],
     feedController.editPost
   )
-  .delete(feedController.deletePost);
+  .delete(auth, feedController.deletePost);
 
 module.exports = router;

@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const ObjectId = require("mongoose").Types.ObjectId;
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 exports.getPosts = (req, res, next) => {
   let page = req.query.page ? parseInt(req.query.page) : 1;
@@ -74,15 +75,23 @@ exports.createPost = (req, res, next) => {
     title,
     content,
     imageUrl,
-    creator: {
-      name: "Quyen"
-    }
+    creator: req.userId
   });
 
   return post
     .save()
     .then(post => {
-      return res.status(201).json({ post });
+      return User.findById(req.userId);
+    })
+    .then(user => {
+      user.posts.push(post);
+      return user.save();
+    })
+    .then(user => {
+      return res.status(201).json({
+        post,
+        creator: { _id: user.id, name: user.name, email: user.email }
+      });
     })
     .catch(err => {
       if (!err.statusCode) {
@@ -123,6 +132,12 @@ exports.editPost = (req, res, next) => {
         throw err;
       }
 
+      if (post.creator.toString() !== req.userId) {
+        const err = new Error("Unauthorize");
+        err.statusCode = 403;
+        throw err;
+      }
+
       if (imageUrl !== post.imageUrl) {
         fs.unlink(path.join(__dirname, "..", post.imageUrl), err =>
           console.log(err)
@@ -153,6 +168,7 @@ exports.deletePost = (req, res, next) => {
     err.statusCode = 404;
     throw err;
   }
+  let fetchPost;
   Post.findById(postId)
     .then(post => {
       if (!post) {
@@ -161,11 +177,24 @@ exports.deletePost = (req, res, next) => {
         throw err;
       }
       // Check user own this post
-      fs.unlink(post.imageUrl, err => {});
+      if (post.creator.toString() !== req.userId) {
+        const err = new Error("Unauthorize");
+        err.statusCode = 403;
+        throw err;
+      }
+
+      fetchPost = post;
+      fs.unlink(fetchPost.imageUrl, err => {});
       return Post.findByIdAndRemove(postId);
     })
     .then(post => {
-      res.status(200).json({ post });
+      return User.findById(req.userId);
+    })
+    .then(user => {
+      return user.deletePost(postId);
+    })
+    .then(user => {
+      res.status(200).json({ post: fetchPost });
     })
     .catch(err => {
       if (!err.statusCode) {

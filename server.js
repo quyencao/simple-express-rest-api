@@ -64,7 +64,8 @@ app.use((err, req, res, next) => {
 mongoose
   .connect(config.get("MONGO_URI"), {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
   })
   .then(() => {
     app.listen(PORT, () => {
