@@ -5,10 +5,21 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const Post = require("../models/Post");
 
 exports.getPosts = (req, res, next) => {
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let limit = req.query.limit ? parseInt(req.query.limit) : 2;
+  let totalItems;
+
   Post.find()
-    .sort({ createdAt: -1 })
+    .countDocuments()
+    .then(count => {
+      totalItems = count;
+      return Post.find()
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit);
+    })
     .then(posts => {
-      res.status(200).json({ posts });
+      res.status(200).json({ posts, totalItems });
     })
     .catch(err => {
       if (!err.statusCode) {
